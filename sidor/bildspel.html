@@ -1,0 +1,17 @@
+<div style="min-height: 128.28"><img id="bildspel-start" width="100%"></div>
+<script>
+const items = [
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel1.jpg",  
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel2.jpg",
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel4.jpg",
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel5.jpg",
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel6.jpg",
+  "https://sikorientering.se/bilder/webbsidebilder/bildspel/bildspel7.jpg"
+];
+function startBildspel() {
+  const item = items[Math.floor(Math.random() * items.length)];
+  document.querySelector('#bildspel-start').src = item;
+}
+startBildspel();
+setInterval(startBildspel, 30000);
+</script>
