@@ -1,0 +1,84 @@
+<style>
+.forum-threads-replies {
+  border-color: #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  padding: 16px;
+  min-height: 450px;
+}
+#forum-threads-sik strong a {
+  font-weight: normal;
+}
+#forum-threads-sik .thread:first-child {
+  margin-top: 8px;
+}
+#forum-threads-sik .thread:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+</style>
+<div class="forum-threads-replies">
+  <h3>Senaste inläggen</h3>
+  <div id="forum-threads-sik">
+    Laddar forumtrådar...
+  </div>
+</div>
+<script>
+const baseUrl = '/sundbybergsik-orientering/';
+const fetchHtml = function(url, selector) {
+  if(!~url.indexOf(':')) {
+    url = `${baseUrl}/${url}`;
+  }
+  return fetch(url)
+    .then(r => r.text())
+    .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+};
+const getThreadInfo = function(tr) {
+  const el = tr.querySelector('td');
+  const href = el.querySelector('a').href;
+  const id = href.split('/').slice(-2).shift();
+  const link = el.querySelector('strong').innerHTML;
+  const replyCount = tr.querySelector('td:nth-child(2)').innerHTML;
+  const html = `<div class="thread" id="forum-thread-${id}">
+    ${el.innerHTML}
+  </div>`;
+  
+  return {
+    html,
+    id,
+    href,
+    replyCount
+  };
+};
+const fetchLastReply = function(threadInfo) {
+  fetchHtml(threadInfo.href, '.fa-comment-o').then(function(replies) {
+    const lastReply = replies.slice(-1).pop().parentElement.parentElement;
+    if(lastReply) {
+      const threadEl = document.querySelector(`#forum-thread-${threadInfo.id}`);
+      for(var small of threadEl.querySelectorAll('small')) {
+        small.parentElement.removeChild(small);
+      }
+      const ipSpan = lastReply.querySelector('span > span');
+      if(ipSpan) {
+        ipSpan.parentElement.removeChild(ipSpan);
+      }
+      lastReply.className = 'small';
+      const replyCount = document.createElement('span');
+      replyCount.className = 'text-muted';
+      replyCount.innerHTML = `(${threadInfo.replyCount} svar)`;
+      lastReply.appendChild(replyCount);
+      threadEl.appendChild(lastReply);
+    }
+  });
+};
+
+fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
+  const max = 10;
+  const threadInfos = threads.slice(0, max).map(getThreadInfo);
+  const html = threadInfos.map(ti => ti.html).join('');
+  document.querySelector('#forum-threads-sik').innerHTML = html;
+
+  threadInfos.forEach(fetchLastReply);
+});
+</script>
