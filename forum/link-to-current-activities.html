@@ -11,6 +11,9 @@
   };
   const getThreadInfo = function(tr) {
     const el = tr.querySelector('td a');
+    if(!el) {
+      return;
+    }
     const href = el.href;
     const text = el.innerHTML;
 
@@ -20,7 +23,7 @@
     };
   };
   const hasKeyword = function(threadInfo) {
-    return threadInfo.text.indexOf('denna vecka') > -1;
+    return threadInfo && threadInfo.text.indexOf('denna vecka') > -1;
   };
 
   fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
