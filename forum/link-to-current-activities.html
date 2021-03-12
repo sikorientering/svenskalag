@@ -1,0 +1,46 @@
+<script>
+(function() {
+  const baseUrl = '/sundbybergsik-orientering/';
+  const fetchHtml = function(url, selector) {
+    if(!~url.indexOf(':')) {
+      url = `${baseUrl}/${url}`;
+    }
+    return fetch(url)
+      .then(r => r.text())
+      .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+  };
+  const getThreadInfo = function(tr) {
+    const el = tr.querySelector('td a');
+    const href = el.href;
+    const text = el.innerHTML;
+
+    return {
+      href,
+      text
+    };
+  };
+  const hasKeyword = function(threadInfo) {
+    return threadInfo.text.indexOf('denna vecka') > -1;
+  };
+
+  fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
+    const thisWeeksThread = threads.map(getThreadInfo).filter(hasKeyword).shift();
+    const text = thisWeeksThread ? thisWeeksThread.text : 'Forum';
+    const href = thisWeeksThread ? thisWeeksThread.href : `${baseUrl}forum`;
+    const button = document.querySelector('#current-activities-link');
+    const textEl = button.querySelector('strong');
+    textEl.innerHTML = text;
+    const anchorEl = button.querySelector('a');
+    anchorEl.href = href;
+  });
+})();
+</script>
+<div id="current-activities-link" style="background-color: #00733b" class="article-button  no-logo  rounded">
+    <a href="">
+        <p>
+            <strong>Laddar...</strong>
+            <span></span>
+            <i class="fa fa-chevron-right text-primary-color"></i>
+        </p>
+    </a>
+</div>
