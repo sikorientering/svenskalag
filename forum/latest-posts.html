@@ -25,60 +25,62 @@
   </div>
 </div>
 <script>
-const baseUrl = '/sundbybergsik-orientering/';
-const fetchHtml = function(url, selector) {
-  if(!~url.indexOf(':')) {
-    url = `${baseUrl}/${url}`;
-  }
-  return fetch(url)
-    .then(r => r.text())
-    .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
-};
-const getThreadInfo = function(tr) {
-  const el = tr.querySelector('td');
-  const href = el.querySelector('a').href;
-  const id = href.split('/').slice(-2).shift();
-  const link = el.querySelector('strong').innerHTML;
-  const replyCount = tr.querySelector('td:nth-child(2)').innerHTML;
-  const html = `<div class="thread" id="forum-thread-${id}">
-    ${el.innerHTML}
-  </div>`;
-  
-  return {
-    html,
-    id,
-    href,
-    replyCount
-  };
-};
-const fetchLastReply = function(threadInfo) {
-  fetchHtml(threadInfo.href, '.fa-comment-o').then(function(replies) {
-    const lastReply = replies.slice(-1).pop().parentElement.parentElement;
-    if(lastReply) {
-      const threadEl = document.querySelector(`#forum-thread-${threadInfo.id}`);
-      for(var small of threadEl.querySelectorAll('small')) {
-        small.parentElement.removeChild(small);
-      }
-      const ipSpan = lastReply.querySelector('span > span');
-      if(ipSpan) {
-        ipSpan.parentElement.removeChild(ipSpan);
-      }
-      lastReply.className = 'small';
-      const replyCount = document.createElement('span');
-      replyCount.className = 'text-muted';
-      replyCount.innerHTML = `(${threadInfo.replyCount} svar)`;
-      lastReply.appendChild(replyCount);
-      threadEl.appendChild(lastReply);
+(function() {
+  const baseUrl = '/sundbybergsik-orientering/';
+  const fetchHtml = function(url, selector) {
+    if(!~url.indexOf(':')) {
+      url = `${baseUrl}/${url}`;
     }
+    return fetch(url)
+      .then(r => r.text())
+      .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+  };
+  const getThreadInfo = function(tr) {
+    const el = tr.querySelector('td');
+    const href = el.querySelector('a').href;
+    const id = href.split('/').slice(-2).shift();
+    const link = el.querySelector('strong').innerHTML;
+    const replyCount = tr.querySelector('td:nth-child(2)').innerHTML;
+    const html = `<div class="thread" id="forum-thread-${id}">
+      ${el.innerHTML}
+    </div>`;
+
+    return {
+      html,
+      id,
+      href,
+      replyCount
+    };
+  };
+  const fetchLastReply = function(threadInfo) {
+    fetchHtml(threadInfo.href, '.fa-comment-o').then(function(replies) {
+      const lastReply = replies.slice(-1).pop().parentElement.parentElement;
+      if(lastReply) {
+        const threadEl = document.querySelector(`#forum-thread-${threadInfo.id}`);
+        for(var small of threadEl.querySelectorAll('small')) {
+          small.parentElement.removeChild(small);
+        }
+        const ipSpan = lastReply.querySelector('span > span');
+        if(ipSpan) {
+          ipSpan.parentElement.removeChild(ipSpan);
+        }
+        lastReply.className = 'small';
+        const replyCount = document.createElement('span');
+        replyCount.className = 'text-muted';
+        replyCount.innerHTML = `(${threadInfo.replyCount} svar)`;
+        lastReply.appendChild(replyCount);
+        threadEl.appendChild(lastReply);
+      }
+    });
+  };
+
+  fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
+    const max = 10;
+    const threadInfos = threads.slice(0, max).map(getThreadInfo);
+    const html = threadInfos.map(ti => ti.html).join('');
+    document.querySelector('#forum-threads-sik').innerHTML = html;
+
+    threadInfos.forEach(fetchLastReply);
   });
-};
-
-fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
-  const max = 10;
-  const threadInfos = threads.slice(0, max).map(getThreadInfo);
-  const html = threadInfos.map(ti => ti.html).join('');
-  document.querySelector('#forum-threads-sik').innerHTML = html;
-
-  threadInfos.forEach(fetchLastReply);
-});
+})();
 </script>
