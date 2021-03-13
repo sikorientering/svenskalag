@@ -1,0 +1,92 @@
+<style>
+.docs-list-sik {
+  border-color: #ccc;
+  border-radius: 3px;
+  background-color: #fff;
+  padding: 16px;
+  min-height: 450px;
+}
+.docs-list-sik a {
+  text-decoration: none;
+}
+#docs-sik .sik-document:first-child {
+  margin-top: 8px;
+}
+#docs-sik .sik-document:not(:last-child) {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+}
+#current-doc-link {
+  margin-bottom: 24px;
+}
+</style>
+<div id="current-doc-link" style="background-color: #00733b" class="article-button  no-logo  rounded">
+    <a href="">
+        <img src="https://cdn.svenskalag.se/img/clubmarks/svg/12915?&v=3" width="40">
+        <p>
+            <strong>Laddar...</strong>
+            <span></span>
+            <i class="fa fa-chevron-right text-primary-color"></i>
+        </p>
+    </a>
+</div>
+<h2 class="hColor m-b-5">Äldre budkavlar</h2>
+<div class="docs-list-sik">
+  <div id="docs-sik">
+    Laddar...
+  </div>
+</div>
+<script>
+(function() {
+  const baseUrl = '/sundbybergsik-orientering/';
+  const fetchHtml = function(url, selector) {
+    if(!~url.indexOf(':')) {
+      url = `${baseUrl}/${url}`;
+    }
+    return fetch(url)
+      .then(r => r.text())
+      .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+  };
+  const isBudkavleDoc = function(fileInfo) {
+    return fileInfo.href.indexOf('budkav') > -1;
+  };
+  const getFileInfo = function(anchor) {
+    const href = anchor.href.split('?').shift();
+    const hrefTokens = href.split('/');
+    const linktext = hrefTokens.pop().replace(/budkavlen([^\.]+).pdf$/i, 'Budkavlen $1').replace(/_(pdf)?/g, ' ');
+    const id = hrefTokens.pop();
+    const html = `<div class="sik-document" id="sik-document-${id}">
+      <a href="${href}">
+        <figure class="file-icon pdf">
+          <img src="/img/icons/filetype/pdf.png">
+        </figure>
+        <label class="text-narrow">
+          ${linktext}
+        </label>
+      </a>
+    </div>`;
+
+    return {
+      html,
+      id,
+      href,
+      linktext
+    };
+  };
+
+  fetchHtml('dokument', '.file-list-item a.item').then(function(files) {
+    const fileInfos = files.map(getFileInfo).filter(isBudkavleDoc).reverse();
+    const currentDoc = fileInfos.shift();
+
+    const html = fileInfos.map(ti => ti.html).join('');
+    document.querySelector('#docs-sik').innerHTML = html;
+    
+    const button = document.querySelector('#current-doc-link');
+    const textEl = button.querySelector('strong');
+    textEl.innerHTML = currentDoc.linktext;
+    const anchorEl = button.querySelector('a');
+    anchorEl.href = currentDoc.href;    
+  });
+})();
+</script>
