@@ -1,0 +1,65 @@
+<!-- en div per bildgalleri som ska visas. ange adressen till det bildgalleri som ska bäddas in -->
+<div data-bildgalleri="/sundbybergsik-orientering/bildgalleri/81228/klubbklader">
+</div>
+
+<!-- ändra ingenting nedanför -->
+<script>
+document.write('<link href="https://cdn.jsdelivr.net/npm/nanogallery2@3/dist/css/nanogallery2.min.css" rel="stylesheet" type="text/css">');
+</script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nanogallery2@3/dist/jquery.nanogallery2.min.js"></script>
+<script>
+(function() {
+  const fetchHtml = function(url, selector) {
+    return fetch(url)
+      .then(r => r.text())
+      .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+  };
+  const getImageInfo = function(img) {
+    const src = img.src.replace(/_300x300/, ''); // use original, "uncut" image
+    const title = img.title;
+    const html = `<a href="${src}" data-ngthumb="${src}">${title}</a>`;
+
+    return {
+      html,
+      src,
+      title
+    };
+  };
+  
+  const showGallery = function(bildgalleri_url, target_div) { 
+    fetchHtml(bildgalleri_url, '.album-image-link img').then(function(images) {
+      const imageInfos = images.map(getImageInfo);
+      const html = imageInfos.map(ti => ti.html).join('');
+
+      target_div.innerHTML = html;
+      $(target_div).nanogallery2({
+        "thumbnailWidth": "auto",
+        "thumbnailHeight": "300",
+        "thumbnailBorderVertical": 0,
+        "thumbnailBorderHorizontal": 0,
+        "thumbnailLabel": {
+          "position": "onBottom"
+        },
+        "thumbnailAlignment": "fillWidth",
+        "thumbnailOpenImage": true,
+        viewerToolbar:    {
+            display:    true,
+            standard:   'label, fullscreenButton, downloadButton'
+        },
+        viewerTools:    {
+            topLeft:    'pageCounter',
+            topRight:   'playPauseButton, zoomButton, fullscreenButton, closeButton'
+        }
+      });
+    });
+  };
+  
+  const gallery_elements = document.querySelectorAll('div[data-bildgalleri]');
+  for(const gallery_element of gallery_elements) {
+    const bildgalleri_url = gallery_element.dataset.bildgalleri;
+    if(bildgalleri_url) {
+      showGallery(bildgalleri_url, gallery_element);
+    }
+  }
+})();
+</script>
