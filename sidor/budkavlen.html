@@ -49,12 +49,13 @@
       .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
   };
   const isBudkavleDoc = function(fileInfo) {
-    return fileInfo.href.indexOf('budkav') > -1;
+    return fileInfo.linktext.indexOf('kavle') > -1;
   };
   const getFileInfo = function(anchor) {
     const href = anchor.href.split('?').shift();
     const hrefTokens = href.split('/');
-    const linktext = hrefTokens.pop().replace(/budkavlen([^\.]+).pdf$/i, 'Budkavlen $1').replace(/_(pdf)?/g, ' ');
+    const filename = anchor.querySelector('label').innerText.trim().split("\n").shift();
+    const linktext = filename.replace(/_(pdf)?/g, ' ').replace(/budkavlen\s*([^\.]+).pdf/i, 'Budkavlen $1');
     const id = hrefTokens.pop();
     const html = `<div class="sik-document" id="sik-document-${id}">
       <a href="${href}">
