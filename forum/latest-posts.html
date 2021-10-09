@@ -3,28 +3,95 @@
   border-color: #ccc;
   border-radius: 3px;
   background-color: #fff;
-  padding: 16px;
   min-height: 450px;
+  max-height: 450px;
+  display: flex;
+  flex-direction: column;
 }
-#forum-threads-sik strong a {
+.forum-threads-replies h3 {
+  padding: 16px; 
+  padding-bottom: 8px;
+  color: #fff;
+  background-color: #00733b;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+#forum-threads-sik {
+  overflow-y: auto;
+}
+#forum-threads-sik .loader {
+  text-align: center;
+}
+#forum-threads-sik a.thread:hover {
+  background-color: #f4f4f4;
+}
+#forum-threads-sik a.thread:last-child:hover {
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+#forum-threads-sik a.thread {
+  padding-left: 16px;
+  padding-right: 16px;
+  text-decoration: none;
+  color: #555;
+  cursor: hand;
+  display: block;
   font-weight: normal;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: auto;
 }
-#forum-threads-sik .thread:first-child {
-  margin-top: 8px;
+#forum-threads-sik .thread > div {
+  display: flex;
+  justify-content: space-between;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: auto;
 }
-#forum-threads-sik .thread:not(:last-child) {
-  border-bottom: 1px solid #ccc;
-  margin-bottom: 8px;
+#forum-threads-sik .thread:not(:first-child) {
+  border-top: 1px solid #ccc;
+}
+#forum-threads-sik .thread {
+  padding-top: 8px;
   padding-bottom: 8px;
 }
 </style>
 <div class="forum-threads-replies">
   <h3>Senaste inläggen</h3>
   <div id="forum-threads-sik">
-    Laddar forumtrådar...
+    <div class="loader">Laddar forumtrådar...</div>
   </div>
 </div>
 <script>
+if (!Array.prototype.flat) {
+	Object.defineProperty(Array.prototype, 'flat', {
+		configurable: true,
+		value: function flat () {
+			var depth = isNaN(arguments[0]) ? 1 : Number(arguments[0]);
+
+			return depth ? Array.prototype.reduce.call(this, function (acc, cur) {
+				if (Array.isArray(cur)) {
+					acc.push.apply(acc, flat.call(cur, depth - 1));
+				} else {
+					acc.push(cur);
+				}
+
+				return acc;
+			}, []) : Array.prototype.slice.call(this);
+		},
+		writable: true
+	});
+}
+if (!Array.prototype.flatMap) {
+	Object.defineProperty(Array.prototype, 'flatMap', {
+		configurable: true,
+		value: function flatMap (callback) {
+			return Array.prototype.map.apply(this, arguments).flat();
+		},
+		writable: true
+	});
+}
+  
 (function() {
   const baseUrl = '/sundbybergsik-orientering/';
   const fetchHtml = function(url, selector) {
@@ -36,51 +103,122 @@
       .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
   };
   const getThreadInfo = function(tr) {
-    const el = tr.querySelector('td');
-    const href = el.querySelector('a').href;
-    const id = href.split('/').slice(-2).shift();
-    const link = el.querySelector('strong').innerHTML;
-    const replyCount = tr.querySelector('td:nth-child(2)').innerHTML;
-    const html = `<div class="thread" id="forum-thread-${id}">
-      ${el.innerHTML}
-    </div>`;
-
-    return {
-      html,
-      id,
-      href,
-      replyCount
-    };
-  };
-  const fetchLastReply = function(threadInfo) {
-    fetchHtml(threadInfo.href, '.fa-comment-o').then(function(replies) {
-      const lastReply = replies.slice(-1).pop().parentElement.parentElement;
-      if(lastReply) {
-        const threadEl = document.querySelector(`#forum-thread-${threadInfo.id}`);
-        for(var small of threadEl.querySelectorAll('small')) {
-          small.parentElement.removeChild(small);
-        }
-        const ipSpan = lastReply.querySelector('span > span');
-        if(ipSpan) {
-          ipSpan.parentElement.removeChild(ipSpan);
-        }
-        lastReply.className = 'small';
-        const replyCount = document.createElement('span');
-        replyCount.className = 'text-muted';
-        replyCount.innerHTML = `(${threadInfo.replyCount} svar)`;
-        lastReply.appendChild(replyCount);
-        threadEl.appendChild(lastReply);
+    const replyCount = parseInt(tr.querySelector('td:nth-child(2)').innerHTML);
+    
+    if(replyCount > 0) {
+      const anchor = tr.querySelector('a');
+      const href = anchor.href;
+      const id = href.split('/').slice(-2).shift();
+      const thread = anchor.textContent;
+      return {
+        thread,
+        href,
+        id,
+        replyCount
       }
+    }
+  };
+  const months = {
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    maj: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    okt: 9,
+    nov: 10,
+    dec: 11
+  };
+  const monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
+  const now = new Date();
+  const parseTimestamp = function(str) {
+    const m = str.match(/(\d+)\s+(\w+),?\s+([\d:]{4,5})/);
+    const month = months[m[2]];
+    let year = now.getFullYear();
+    let hour = 0;
+    let minute = 0;
+    if(m[3].length === 4) {
+      year = parseInt(m[3]);
+    } else {
+      time = m[3].split(':');
+      if(time.length === 2) {
+        hour = parseInt(time[0]);
+        minute = parseInt(time[1]);
+      }
+    }
+    const day = parseInt(m[1]);
+    return new Date(year, month, day, hour, minute);
+  };
+  const parseReply = function(threadInfo, reply) {
+        const authorAnchor = reply.querySelector('a');
+        const authorName = authorAnchor && authorAnchor.innerText || reply.childNodes[2].textContent.trim();
+        const timestamp = parseTimestamp(reply.lastElementChild && reply.lastElementChild.firstChild && reply.lastElementChild.firstChild.textContent || '');
+        return {
+          threadInfo,
+          authorName,
+          timestamp
+      }
+  };
+  const fetchReplies = function(threadInfo) {
+    return fetchHtml(threadInfo.href, '.fa-comment-o').then(function(replies) {
+      return replies.map(r => parseReply(threadInfo, r.parentElement.parentElement));
     });
   };
+  
+  const sortByTimestamp = function(replies) {
+    return replies.sort((a,b) => a.timestamp < b.timestamp ? 1 : b.timestamp < a.timestamp ? -1 : 0);
+  }
+  
+  const padStart = function(n) {
+    return String(n).padStart(2, '0');
+  };
+  
+  const renderReply = function(reply) {
+    const date = now.toDateString() === reply.timestamp.toDateString() ? '' : `${reply.timestamp.getDate()} ${monthNames[reply.timestamp.getMonth()]}`;
+    const timestamp = `${date} ${reply.timestamp.getHours()}:${padStart(reply.timestamp.getMinutes())}`;
+    return `<a href="${reply.threadInfo.href}" class="thread" title="${reply.authorName} ${timestamp}
+${reply.threadInfo.thread}">
+              <div>
+                <small>${reply.authorName}</small>
+                <small class="text-narrow">
+                  <span class="text-muted">${timestamp}</span>
+               </small>
+             </div>
+             <strong>${reply.threadInfo.thread}</strong>
+    </a>`;
+  };
+  
+  const renderReplies = function(replies) {
+    const max = 20;
+    return replies.slice(0, max).map(renderReply).join('');
+  }
 
-  fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
-    const max = 10;
-    const threadInfos = threads.slice(0, max).map(getThreadInfo);
-    const html = threadInfos.map(ti => ti.html).join('');
+  const updateDom = function(html) {
     document.querySelector('#forum-threads-sik').innerHTML = html;
-
-    threadInfos.forEach(fetchLastReply);
+  }
+  
+  const storageKeyHash = 'sik-threads-hash';
+  const storageKeyContent = 'sik-threads-content';
+  
+  fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
+    const withReplies = threads.map(getThreadInfo).filter(ti => ti);
+    const cacheHash = withReplies.flatMap(r => [r.id, r.replyCount]).join(',');
+    const storedHash = localStorage[storageKeyHash];
+    const storedHtml = localStorage[storageKeyContent];
+    if(cacheHash === storedHash && storedHtml) {
+      updateDom(storedHtml);
+      return;
+    }
+    
+    const replies = withReplies.map(fetchReplies);
+    Promise.all(replies).then(r => r.flat()).then(sortByTimestamp).then(renderReplies).then(html => {
+      updateDom(html);
+      localStorage[storageKeyHash] = cacheHash;
+      localStorage[storageKeyContent] = html;
+    });
   });
 })();
 </script>
