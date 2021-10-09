@@ -136,21 +136,35 @@ if (!Array.prototype.flatMap) {
   const monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
   const now = new Date();
   const parseTimestamp = function(str) {
-    const m = str.match(/(\d+)\s+(\w+),?\s+([\d:]{4,5})/);
-    const month = months[m[2]];
     let year = now.getFullYear();
+    let month = now.getMonth();
+    let day = now.getDate();
     let hour = 0;
     let minute = 0;
-    if(m[3].length === 4) {
-      year = parseInt(m[3]);
-    } else {
-      time = m[3].split(':');
-      if(time.length === 2) {
-        hour = parseInt(time[0]);
-        minute = parseInt(time[1]);
+
+    const m = str.match(/(Idag|(\d+)\s+(\w+))?,?\s+([\d:]{4,5})/);
+    if(m && m.length === 5) {
+      const dayMatch = m[2];
+      const monthMatch = m[3];
+      const yearOrTimeMatch = m[4];
+      if(dayMatch) {
+        day = parseInt(dayMatch);
+      }
+      if(monthMatch && monthMatch.length === 3) {
+        month = months[monthMatch];
+      }
+      if(yearOrTimeMatch) {
+        if(yearOrTimeMatch.length === 4) {
+          year = parseInt(yearOrTimeMatch);
+        } else {
+          time = yearOrTimeMatch.split(':');
+          if(time.length === 2) {
+            hour = parseInt(time[0]);
+            minute = parseInt(time[1]);
+          }
+        }
       }
     }
-    const day = parseInt(m[1]);
     return new Date(year, month, day, hour, minute);
   };
   const parseReply = function(threadInfo, reply) {
