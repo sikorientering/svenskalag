@@ -195,8 +195,12 @@ if (!Array.prototype.flatMap) {
   };
   
   const renderReply = function(reply) {
-    const date = now.toDateString() === reply.timestamp.toDateString() ? '' : `${reply.timestamp.getDate()} ${monthNames[reply.timestamp.getMonth()]}`;
-    const timestamp = `${date} ${reply.timestamp.getHours()}:${padStart(reply.timestamp.getMinutes())}`;
+    const hour = reply.timestamp.getHours();
+    const minute = reply.timestamp.getMinutes();
+    const hideDatePart = hour + minute > 0 && now.toDateString() === reply.timestamp.toDateString();
+    const date = hideDatePart ? '' : `${reply.timestamp.getDate()} ${monthNames[reply.timestamp.getMonth()]}`;
+    const time = hour + minute === 0 ? '' : ` ${hour}:${padStart(minute)}`;
+    const timestamp = `${date}${time}`;
     return `<a href="${reply.threadInfo.href}" class="thread" title="${reply.authorName} ${timestamp}
 ${reply.threadInfo.thread}">
               <div>
