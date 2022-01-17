@@ -1,0 +1,60 @@
+<div id="current-doc-link" style="background-color: #00733b" class="article-button  two-lines  rounded">
+    <a href="">
+        <img src="https://cdn.svenskalag.se/img/clubmarks/svg/12915?&v=3" width="40">
+        <p>
+            <strong>Läs senaste Budkavlen</strong>
+            <span>&nbsp;</span>
+            <i class="fa fa-chevron-right text-primary-color"></i>
+        </p>
+    </a>
+</div>
+<script>
+(function() {
+  const baseUrl = '/sundbybergsik-orientering/';
+  const fetchHtml = function(url, selector) {
+    if(!~url.indexOf(':')) {
+      url = `${baseUrl}/${url}`;
+    }
+    return fetch(url)
+      .then(r => r.text())
+      .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
+  };
+  const getFileInfo = function(anchor) {
+    const href = anchor.href.split('?').shift();
+    const hrefTokens = href.split('/');
+    const filename = anchor.querySelector('label').innerText.trim().split("\n").shift();
+    if(filename.indexOf('kavle') === -1) {
+      return null;
+    }
+    const linktext = filename.replace(/_(pdf)?/g, ' ').replace(/budkavlen\s*([^\.]+).pdf/i, '$1');
+    const id = hrefTokens.pop();
+
+    return {
+      id,
+      href,
+      linktext: `Budkavlen ${linktext}`,
+      description: `${linktext[0].toUpperCase()}${linktext.substring(1)}`
+    };
+  };
+
+  fetchHtml('dokument', '.file-list-item a.item').then(function(files) {
+    let currentDoc;
+    for(const file of files.reverse()) {
+      currentDoc = getFileInfo(file);
+      if(currentDoc) {
+        break;
+      }
+    }
+
+    if(!currentDoc) {
+      return;
+    }
+
+    const button = document.querySelector('#current-doc-link');
+    const textEl = button.querySelector('span');
+    textEl.innerHTML = currentDoc.description;
+    const anchorEl = button.querySelector('a');
+    anchorEl.href = currentDoc.href;    
+  });
+})();
+</script>
