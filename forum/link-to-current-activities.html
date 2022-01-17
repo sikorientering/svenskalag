@@ -31,17 +31,18 @@
     const text = thisWeeksThread ? thisWeeksThread.text : 'Forum';
     const href = thisWeeksThread ? thisWeeksThread.href : `${baseUrl}forum`;
     const button = document.querySelector('#current-activities-link');
-    const textEl = button.querySelector('strong');
+    const textEl = button.querySelector('span');
     textEl.innerHTML = text;
     const anchorEl = button.querySelector('a');
     anchorEl.href = href;
   });
 })();
 </script>
-<div id="current-activities-link" style="background-color: #00733b" class="article-button  no-logo  rounded">
+<div id="current-activities-link" style="background-color: #00733b" class="article-button  two-lines  rounded">
     <a href="">
+        <img src="https://cdn.svenskalag.se/img/clubmarks/svg/12915?&v=3" width="40">
         <p>
-            <strong>Laddar...</strong>
+            <strong>Läs veckobrevet</strong>
             <span></span>
             <i class="fa fa-chevron-right text-primary-color"></i>
         </p>
