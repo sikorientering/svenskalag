@@ -22,7 +22,7 @@
   const getFileInfo = function(anchor) {
     const href = anchor.href.split('?').shift();
     const hrefTokens = href.split('/');
-    const filename = anchor.querySelector('label').innerText.trim().split("\n").shift();
+    const filename = anchor.querySelector('label').innerText.trim().split("\n").shift().toLowerCase();
     if(filename.indexOf('kavle') === -1) {
       return null;
     }
