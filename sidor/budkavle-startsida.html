@@ -19,6 +19,16 @@
       .then(r => r.text())
       .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
   };
+  const months = ['jan','feb','mar','apr','maj','jun','jul','aug','sep','okt','nov','dec'];
+  const yearRx = /\d+/;
+  const getMonth = function(filename) {
+    for(let i = 0; i < months.length; i++) {
+      if(filename.indexOf(months[i]) > -1) {
+        return i;
+      }
+    }
+    return 12;
+  };
   const getFileInfo = function(anchor) {
     const href = anchor.href.split('?').shift();
     const hrefTokens = href.split('/');
@@ -26,33 +36,28 @@
     if(filename.indexOf('kavle') === -1) {
       return null;
     }
-    const linktext = filename.replace(/_(pdf)?/g, ' ').replace(/budkavlen\s*([^\.]+).pdf/i, '$1');
+    const month = getMonth(filename);
+    const match = yearRx.exec(filename);
+    const year = parseInt(match[0]) % 2000;
+    const linktext = filename.replace(/_(pdf)?/g, ' ').replace(/budkavlen\s*([^\.]+).pdf/i, 'Budkavlen $1');
     const id = hrefTokens.pop();
 
     return {
       id,
       href,
-      linktext: `Budkavlen ${linktext}`,
-      description: `${linktext[0].toUpperCase()}${linktext.substring(1)}`
+      linktext,
+      year,
+      month
     };
   };
 
   fetchHtml('dokument', '.file-list-item a.item').then(function(files) {
-    let currentDoc;
-    for(const file of files.reverse()) {
-      currentDoc = getFileInfo(file);
-      if(currentDoc) {
-        break;
-      }
-    }
-
-    if(!currentDoc) {
-      return;
-    }
-
+    const fileInfos = files.map(getFileInfo).filter(f => f).reverse().sort((a,b) => (a.year > b.year || a.year === b.year && a.month > b.month) ? -1 : 1);
+    const currentDoc = fileInfos.shift();
+      
     const button = document.querySelector('#current-doc-link');
     const textEl = button.querySelector('span');
-    textEl.innerHTML = currentDoc.description;
+    textEl.innerHTML = currentDoc.linktext;
     const anchorEl = button.querySelector('a');
     anchorEl.href = currentDoc.href;    
   });
