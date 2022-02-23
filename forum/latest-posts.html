@@ -138,15 +138,18 @@ if (!Array.prototype.flatMap) {
     dec: 11
   };
   const monthNames = ['jan', 'feb', 'mar', 'apr', 'maj', 'jun', 'jul', 'aug', 'sep', 'okt', 'nov', 'dec'];
-  const now = new Date();
   const parseTimestamp = function(str) {
-    let year = now.getFullYear();
-    let month = now.getMonth();
-    let day = now.getDate();
+    let date = new Date();
+    if(str.indexOf('Igår') !== -1) {
+      date.setDate(date.getDate() - 1);
+    }
+    const m = str.match(/(Idag|(\d+)\s+(\w+))?,?\s+([\d:]{4,5})/);
+    
+    let year = date.getFullYear();
+    let month = date.getMonth();
+    let day = date.getDate();
     let hour = 0;
     let minute = 0;
-
-    const m = str.match(/(Idag|(\d+)\s+(\w+))?,?\s+([\d:]{4,5})/);
     if(m && m.length === 5) {
       const dayMatch = m[2];
       const monthMatch = m[3];
@@ -195,6 +198,7 @@ if (!Array.prototype.flatMap) {
     return String(n).padStart(2, '0');
   };
   
+  const now = new Date();
   const renderReply = function(reply) {
     const hour = reply.timestamp.getHours();
     const minute = reply.timestamp.getMinutes();
