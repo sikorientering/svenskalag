@@ -230,7 +230,11 @@ ${reply.threadInfo.thread}">
   const storageKeyHash = 'sik-threads-hash';
   const storageKeyContent = 'sik-threads-content';
   
-  fetchHtml('forum', 'div.forum-actions + p + div > table > tbody > tr').then(function(threads) {
+  const selector = 'div.forum-actions + p + div > table > tbody > tr';
+  const page1 = fetchHtml('forum', selector);
+  const page2 = fetchHtml('forum?page=2', selector);
+  Promise.all([page1, page2]).then(function(pages) {
+    const threads = pages.flat();
     const withReplies = threads.map(getThreadInfo).filter(ti => ti);
     const cacheHash = withReplies.flatMap(r => [r.id, r.replyCount]).join(',');
     const storedHash = localStorage[storageKeyHash];
