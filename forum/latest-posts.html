@@ -109,19 +109,17 @@ if (!Array.prototype.flatMap) {
   };
   const getThreadInfo = function(tr) {
     const replyCount = parseInt(tr.querySelector('td:nth-child(2)').innerHTML);
+    const anchor = tr.querySelector('a');
+    const href = anchor.href;
+    const id = href.split('/').slice(-2).shift();
+    const thread = anchor.textContent;
     
-    if(replyCount > 0) {
-      const anchor = tr.querySelector('a');
-      const href = anchor.href;
-      const id = href.split('/').slice(-2).shift();
-      const thread = anchor.textContent;
-      return {
-        thread,
-        href,
-        id,
-        replyCount
-      }
-    }
+    return {
+      thread,
+      href,
+      id,
+      replyCount
+    };
   };
   const months = {
     jan: 0,
