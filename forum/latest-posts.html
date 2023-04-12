@@ -9,7 +9,7 @@
   flex-direction: column;
 }
 .forum-threads-replies h3 {
-  padding: 16px; 
+  padding: 16px;
   padding-bottom: 8px;
   color: #fff;
   background-color: #00733b;
@@ -96,7 +96,7 @@ if (!Array.prototype.flatMap) {
 		writable: true
 	});
 }
-  
+
 (function() {
   const baseUrl = '/sundbybergsik-orientering/';
   const fetchHtml = function(url, selector) {
@@ -113,7 +113,7 @@ if (!Array.prototype.flatMap) {
     const href = anchor.href;
     const id = href.split('/').slice(-2).shift();
     const thread = anchor.textContent;
-    
+
     return {
       thread,
       href,
@@ -142,7 +142,7 @@ if (!Array.prototype.flatMap) {
       date.setDate(date.getDate() - 1);
     }
     const m = str.match(/(Idag|(\d+)\s+(\w+))?,?\s+([\d:]{4,5})/);
-    
+
     let year = date.getFullYear();
     let month = date.getMonth();
     let day = date.getDate();
@@ -187,27 +187,42 @@ if (!Array.prototype.flatMap) {
       return replies.map(r => parseReply(threadInfo, r.parentElement.parentElement));
     });
   };
-  
+
   const sortByTimestamp = function(replies) {
     return replies.sort((a,b) => a.timestamp < b.timestamp ? 1 : b.timestamp < a.timestamp ? -1 : 0);
-  }
-  
+  };
+
   const padStart = function(n) {
     return String(n).padStart(2, '0');
   };
-  
+
+  const firstName = function(fullName) {
+    return fullName.split(' ', 1).pop();
+  };
+
+  const getAuthorsString = function(threadAuthors) {
+    const names = threadAuthors.slice(0, 3).map(firstName);
+    if(threadAuthors.length > 3) {
+      return `${names[0]}, ${names[1]} +${threadAuthors.length-2} andra`;
+    } else {
+      return names.join(', ');
+    }
+  }
+
   const now = new Date();
-  const renderReply = function(reply) {
+  const renderThread = function(reply, threadAuthors) {
     const hour = reply.timestamp.getHours();
     const minute = reply.timestamp.getMinutes();
     const hideDatePart = hour + minute > 0 && now.toDateString() === reply.timestamp.toDateString();
     const date = hideDatePart ? '' : `${reply.timestamp.getDate()} ${monthNames[reply.timestamp.getMonth()]}`;
     const time = hour + minute === 0 ? '' : ` ${hour}:${padStart(minute)}`;
     const timestamp = `${date}${time}`;
+    const authors = getAuthorsString(threadAuthors);
+
     return `<a href="${reply.threadInfo.href}" class="thread" title="${reply.authorName} ${timestamp}
 ${reply.threadInfo.thread}">
               <div>
-                <small>${reply.authorName}</small>
+                <small>${authors}</small>
                 <small class="text-narrow">
                   <span class="text-muted">${timestamp}</span>
                </small>
@@ -215,19 +230,32 @@ ${reply.threadInfo.thread}">
              <strong>${reply.threadInfo.thread}</strong>
     </a>`;
   };
-  
-  const renderReplies = function(replies) {
-    const max = 20;
-    return replies.slice(0, max).map(renderReply).join('');
+
+  const getAuthors = function(replies, threadInfo) {
+    return Array.from(new Set(replies.filter(r => r.threadInfo.href === threadInfo.href).map(r => r.authorName)));
+  }
+
+  const renderThreads = function(replies) {
+    const threadHtml = {};
+    for(const reply of replies) {
+      if(reply.threadInfo.href in threadHtml) {
+        continue;
+      }
+
+      const authors = getAuthors(replies, reply.threadInfo);
+      threadHtml[reply.threadInfo.href] = renderThread(reply, authors);
+    }
+
+    return Object.values(threadHtml).join('');
   }
 
   const updateDom = function(html) {
     document.querySelector('#forum-threads-sik').innerHTML = html;
   }
-  
+
   const storageKeyHash = 'sik-threads-hash';
   const storageKeyContent = 'sik-threads-content';
-  
+
   const selector = 'div.forum-actions + p + div > table > tbody > tr';
   const page1 = fetchHtml('forum', selector);
   const page2 = fetchHtml('forum?page=2', selector);
@@ -241,9 +269,9 @@ ${reply.threadInfo.thread}">
       updateDom(storedHtml);
       return;
     }
-    
+
     const replies = withReplies.map(fetchReplies);
-    Promise.all(replies).then(r => r.flat()).then(sortByTimestamp).then(renderReplies).then(html => {
+    Promise.all(replies).then(r => r.flat()).then(sortByTimestamp).then(renderThreads).then(html => {
       updateDom(html);
       localStorage[storageKeyHash] = cacheHash;
       localStorage[storageKeyContent] = html;
