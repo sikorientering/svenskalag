@@ -255,11 +255,25 @@ ${reply.threadInfo.thread}">
     }
 
     return Object.values(threadHtml).join('');
-  }
+  };
 
+  const updateCurrentActivitiesLink = function(threads) {
+    const thisWeeksThread = threads.filter(t => t.thread.indexOf('denna vecka') > -1).shift();
+    const text = thisWeeksThread ? thisWeeksThread.thread : 'Forum';
+    const href = thisWeeksThread ? thisWeeksThread.href : `${baseUrl}forum`;
+    const button = document.querySelector('#current-activities-link');
+    if(!button) {
+      return;
+    }
+    const textEl = button.querySelector('span');
+    textEl.innerHTML = text;
+    const anchorEl = button.querySelector('a');
+    anchorEl.href = href;
+  };
+	
   const updateDom = function(html) {
     document.querySelector('#forum-threads-sik').innerHTML = html;
-  }
+  };
 
   const storageKeyHash = 'sik-threads-hash';
   const storageKeyContent = 'sik-threads-content';
@@ -270,6 +284,8 @@ ${reply.threadInfo.thread}">
   Promise.all([page1, page2]).then(function(pages) {
     const threads = pages.flat();
     const withReplies = threads.map(getThreadInfo).filter(ti => ti);
+    updateCurrentActivitiesLink(withReplies);
+	  
     const cacheHash = withReplies.flatMap(r => [r.id, r.replyCount]).join(',');
     const storedHash = localStorage[storageKeyHash];
     const storedHtml = localStorage[storageKeyContent];
