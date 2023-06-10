@@ -111,7 +111,12 @@ if (!Array.prototype.flatMap) {
       .then(t => Array.prototype.slice.call(new DOMParser().parseFromString(t, 'text/html').querySelectorAll(selector)));
   };
   const getThreadInfo = function(tr) {
-    const replyCount = parseInt(tr.querySelector('td:nth-child(2)').innerHTML);
+    const replyCountTd = tr.querySelector('td:nth-child(2)');
+    if(!replyCountTd) {
+      return;
+    }
+
+    const replyCount = parseInt(replyCountTd.innerHTML);
     const anchor = tr.querySelector('a');
     const href = anchor.href;
     const id = href.split('/').slice(-2).shift();
