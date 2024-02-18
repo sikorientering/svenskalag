@@ -9,13 +9,12 @@ article.runner_profile {
 
 .profile_card {
   position: relative;
-  font-family: Roboto, Arial, Helvetica, sans-serif;
   display: inline-block;
   background: rgb(2,0,36);
   background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(0,115,59,1) 80%);
-  padding: 6px;
-  border-radius: 2px;
-  border: 1px solid rgba(0,115,63,1);
+  padding: .4em;
+  border-radius: .1em;
+  border: .1em solid rgba(0,115,63,1);
   overflow-x: clip;
 }
 
@@ -25,24 +24,21 @@ article.runner_profile {
   background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%);  
 }
 .photo img {
+  border-top-left-radius: .8em;
   max-width: 25vw;
 }
 
 .photobox {
-  border: 6px solid #0000;
-  border-radius:10px;
-  padding: 6px;
+  border: .4em solid #0000;
+  border-radius: .8em;
+  padding: .4em;
   background:
     linear-gradient(white,grey) padding-box,
     linear-gradient(-45deg, #00733b,white) border-box;
 }
 .ribbon {
-  font-size: 28px;
   font-weight: bold;
   color: #fff;
-}
-.ribbon {
-  font-size: 1em;
   text-align: center;
   --s: .4em; /* the ribbon size */
   --d: .4em;  /* the depth */
@@ -59,29 +55,30 @@ article.runner_profile {
 
 .infobox {
   margin-top: -1.6em;
-  margin-left: -6px;
-  margin-right: -6px;
-  margin-bottom: -6px;
+  margin-left: -.4em;
+  margin-right: -.4em;
+  margin-bottom: -.4em;
   color: white;
   letter-spacing: .1em;
   background: rgb(0,0,0);
   background: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-  border-radius: 10px;
+  border-radius: .8em;
   font-weight: 600;
   font-size: .8em;
+  padding-bottom: .8em;
 }
 
 .infobox_inner {
   padding-top: 2em;
-  margin-left: 6px;
-  margin-right: 6px;
+  margin-left: 1em;
+  margin-right: 1em;
 }
 
 .frame {
-  padding: 6px;
+  padding: .4em;
   background: rgb(0,0,0);
   background: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
-  border-radius: 10px;
+  border-radius: .8em;
 
 }
 
@@ -89,26 +86,27 @@ article.runner_profile {
   color: rgba(255,255,255,.8);
   font-style: italic;
   font-weight: 100;
-  font-size: .75em;
+  font-size: .7em;
   text-transform: uppercase;
 }
 
 .runner_class {
   position: absolute;
   z-index: 1;
-  top: 0px;
-  right: 0px;
+  top: 0em;
+  right: 0em;
   background: #fff;
-  border-top-left-radius: 6px;
-  border-bottom-left-radius: 16px;
-  border: 4px solid #00733f;
-  border-right-width: 0px;
-  border-top-width: 0px;
-  margin-left: -6px;
+  border-top-left-radius: .4em;
+  border-bottom-left-radius: 1em;
+  border: .4em solid #00733f;
+  border-right-width: 0em;
+  border-top-width: 0em;
+  margin-left: -.4em;
   line-height: 1.5em;
-  padding-left: 6px;
-  padding-right: 6px;
-  font-weight: bold
+  padding-left: .4em;
+  padding-right: .4em;
+  font-weight: bold;
+  font-size: 1em;
 }
 
 .stripes {
@@ -116,14 +114,14 @@ article.runner_profile {
   box-sizing: content-box;
   transform: rotate(45deg);
   z-index: 1;
-  bottom: -16px;
-  right: 6px;
+  bottom: -1em;
+  right: .4em;
   background-color: #00733f;
-  border-left: 6px solid #fff;
-  border-right: 8px solid #000;
-  width: 6px;
-  height: 64px;
-  clip-path: polygon(0 0, 64px 64px, 64px 0px, 0px 64px); 
+  border-left: .4em solid #fff;
+  border-right: .4em solid #000;
+  width: .4em;
+  height: 4em;
+  clip-path: polygon(0 0, 4em 4em, 4em 0, 0 4em); 
 }
 
 aside h5, aside p {
@@ -136,9 +134,13 @@ aside p {
 @media screen and (max-width: 767px) {
   article.runner_profile {
     flex-direction: column;
+    font-size: 200%;
   }
   section.profile_card .photo img {
     max-width: 100%;
+  }
+  section.profile_card .infobox {
+    font-size: .7em;
   }
 }
 </style>
