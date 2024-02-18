@@ -1,0 +1,190 @@
+<style>
+article.runner_profile {
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 1em;
+}
+
+.profile_card {
+  position: relative;
+  font-family: Roboto, Arial, Helvetica, sans-serif;
+  display: inline-block;
+  background: rgb(2,0,36);
+  background: radial-gradient(circle, rgba(2,0,36,1) 0%, rgba(0,115,59,1) 80%);
+  padding: 6px;
+  border-radius: 2px;
+  border: 1px solid rgba(0,115,63,1);
+  overflow-x: clip;
+}
+
+.photo {
+  text-align: center;
+  background: rgb(0,0,0);
+  background: linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(255,255,255,1) 100%);  
+}
+.photo img {
+  max-width: 25vw;
+}
+
+.photobox {
+  border: 6px solid #0000;
+  border-radius:10px;
+  padding: 6px;
+  background:
+    linear-gradient(white,grey) padding-box,
+    linear-gradient(-45deg, #00733b,white) border-box;
+}
+.ribbon {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+}
+.ribbon {
+  font-size: 1em;
+  text-align: center;
+  --s: .4em; /* the ribbon size */
+  --d: .4em;  /* the depth */
+  --c: 0em;  /* the cutout part */
+  margin-top: -1.3em;
+  padding: var(--d) calc(var(--s) + var(--d) + .5em) 0;
+  line-height: 1.4;
+  background: 
+    linear-gradient(90deg,#0004 var(--d),#0000 0 calc(100% - var(--d)),#0004 0) 
+    50%/calc(100% - 2*var(--s)) 100% no-repeat;
+  clip-path: polygon(0 0,var(--s) 0,calc(var(--s) + var(--d)) var(--d),calc(100% - var(--s) - var(--d)) var(--d),calc(100% - var(--s)) 0,100% 0,calc(100% - var(--c)) calc(50% - var(--d)/2),100% calc(100% - var(--d)),calc(100% - var(--s)) calc(100% - var(--d)),calc(100% - var(--s) - var(--d)) 100%,calc(var(--s) + var(--d)) 100%,var(--s) calc(100% - var(--d)),0 calc(100% - var(--d)),var(--c) calc(50% - var(--d)/2));
+  background-color: #00733b; /* the main color */
+}
+
+.infobox {
+  margin-top: -1.6em;
+  margin-left: -6px;
+  margin-right: -6px;
+  margin-bottom: -6px;
+  color: white;
+  letter-spacing: .1em;
+  background: rgb(0,0,0);
+  background: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: .8em;
+}
+
+.infobox_inner {
+  padding-top: 2em;
+  margin-left: 6px;
+  margin-right: 6px;
+}
+
+.frame {
+  padding: 6px;
+  background: rgb(0,0,0);
+  background: linear-gradient(45deg, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+  border-radius: 10px;
+
+}
+
+.infobox .fact {
+  color: rgba(255,255,255,.8);
+  font-style: italic;
+  font-weight: 100;
+  font-size: .75em;
+  text-transform: uppercase;
+}
+
+.runner_class {
+  position: absolute;
+  z-index: 1;
+  top: 0px;
+  right: 0px;
+  background: #fff;
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 16px;
+  border: 4px solid #00733f;
+  border-right-width: 0px;
+  border-top-width: 0px;
+  margin-left: -6px;
+  line-height: 1.5em;
+  padding-left: 6px;
+  padding-right: 6px;
+  font-weight: bold
+}
+
+.stripes {
+  position: absolute;
+  box-sizing: content-box;
+  transform: rotate(45deg);
+  z-index: 1;
+  bottom: -16px;
+  right: 6px;
+  background-color: #00733f;
+  border-left: 6px solid #fff;
+  border-right: 8px solid #000;
+  width: 6px;
+  height: 64px;
+  clip-path: polygon(0 0, 64px 64px, 64px 0px, 0px 64px); 
+}
+
+aside h5, aside p {
+  margin-bottom: .1em;
+}
+aside p {
+  padding-bottom: .4em;
+}
+
+@media screen and (max-width: 767px) {
+  article.runner_profile {
+    flex-direction: column;
+  }
+  section.profile_card .photo img {
+    max-width: 100%;
+  }
+}
+</style>
+
+<article class="runner_profile">
+  <section class="profile_card">
+    <div class="runner_class">
+      D45
+    </div>
+    <div class="stripes">
+    </div>
+    <div class="frame">
+      <div class="photobox">
+        <div class="photo">
+          <img src="https://randomuser.me/api/portraits/women/81.jpg" width="1270"/>
+        </div>
+      </div>
+      <div class="ribbon">
+        Orienteringslöpare
+        <br>
+        Sumpansson
+      </div>
+      <div class="infobox">
+        <div class="infobox_inner">
+          <p>
+            <span class="fact">Favoritterräng:</span>
+            <br>
+            Lövskog
+          </p>
+          <p>
+            <span class="fact">Bästa merit:</span>
+            <br>
+            🥇 Veteran-SM 2023
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <aside>
+    <p>
+      <h5>Mål:</h5>
+      lorem ipsum dolor sit amet...
+    </p>
+    <p>
+      <h5>Minnesvärd orientering:</h5>
+      lorem ipsum dolor sit amet...
+    </p>
+  </aside>
+</article>
