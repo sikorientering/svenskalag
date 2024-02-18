@@ -17,7 +17,9 @@ article.runner_profile {
   border: .1em solid rgba(0,115,63,1);
   overflow-x: clip;
 }
-
+.profile_card, aside {
+  box-shadow: 1px 2px 4px 0px rgba(153,153,153,1);  
+}
 .photo {
   text-align: center;
   background: rgb(0,0,0);
@@ -53,7 +55,7 @@ article.runner_profile {
   background-color: #00733b; /* the main color */
 }
 
-.infobox {
+.personalfacts {
   margin-top: -1.6em;
   margin-left: -.4em;
   margin-right: -.4em;
@@ -68,7 +70,7 @@ article.runner_profile {
   padding-bottom: .8em;
 }
 
-.infobox_inner {
+.personalfacts > section {
   padding-top: 2em;
   margin-left: 1em;
   margin-right: 1em;
@@ -82,12 +84,14 @@ article.runner_profile {
 
 }
 
-.infobox .fact {
+.personalfacts h5 {
   color: rgba(255,255,255,.8);
   font-style: italic;
   font-weight: 100;
   font-size: .7em;
   text-transform: uppercase;
+  margin-top: 1.2em;
+  margin-bottom: .4em;
 }
 
 .runner_class {
@@ -124,22 +128,42 @@ article.runner_profile {
   clip-path: polygon(0 0, 4em 4em, 4em 0, 0 4em); 
 }
 
+aside {
+  flex-grow: 1;
+  border: .4em solid #0000;
+  border-radius: .4em;
+  padding: .4em;
+  background:
+    linear-gradient(-45deg, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 1.2em, rgba(0,115,59,1) 1.2em, rgba(0,115,59,1) 2em, rgba(255,255,255,1) 2em, rgba(255,255,255,1) 2.8em, rgba(0,115,59,1) 2.8em, rgba(0,0,0,.1)) padding-box,
+    linear-gradient(-45deg, rgba(0,0,0,1), rgba(0,115,59,1) 92%, rgba(0,115,59,.7)) border-box;
+  color: #fff;
+}
+
+aside {
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
 aside h5, aside p {
+  margin-top: .2em;
   margin-bottom: .1em;
 }
 aside p {
   padding-bottom: .4em;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 1);
 }
 
 @media screen and (max-width: 767px) {
   article.runner_profile {
     flex-direction: column;
-    font-size: 200%;
+  }
+  section.profile_card {
+    font-size: 125%;
   }
   section.profile_card .photo img {
     max-width: 100%;
   }
-  section.profile_card .infobox {
+  section.profile_card .personalfacts {
     font-size: .7em;
   }
 }
@@ -163,29 +187,23 @@ aside p {
         <br>
         Sumpansson
       </div>
-      <div class="infobox">
-        <div class="infobox_inner">
-          <p>
-            <span class="fact">Favoritterräng:</span>
-            <br>
-            Lövskog
-          </p>
-          <p>
-            <span class="fact">Bästa merit:</span>
-            <br>
-            🥇 Veteran-SM 2023
-          </p>
-        </div>
+      <div class="personalfacts">
+        <section>
+          <h5>Favoritterräng:</h5>
+          Lövskog
+          <h5>Bästa merit:</h5>
+          🥇 Veteran-SM 2023
+        </section>
       </div>
     </div>
   </section>
   <aside>
+    <h5>Mål:</h5>
     <p>
-      <h5>Mål:</h5>
       lorem ipsum dolor sit amet...
     </p>
-    <p>
       <h5>Minnesvärd orientering:</h5>
+    <p>
       lorem ipsum dolor sit amet...
     </p>
   </aside>
