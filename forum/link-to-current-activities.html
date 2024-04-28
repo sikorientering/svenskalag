@@ -282,8 +282,8 @@ ${reply.threadInfo.thread}">
   };
 	
   const updateDom = function(html) {
-    const isMobileAndLoggedIn = document.querySelector('body.device-mobile #logged-in-menu');
-    if(isMobileAndLoggedIn) {
+    const isMobile = document.querySelector('body.device-mobile');
+    if(isMobile) {
       document.querySelector('#forum-threads-sik-mobile').innerHTML = html;
       document.querySelector('.forum-threads-replies-mobile').style.display = 'flex';
     }
